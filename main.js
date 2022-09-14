@@ -5,7 +5,7 @@ function main(params) {
   //   note:pakai backtick untuk multiple lines
 
   // decalre array untuk tiga titik
-  let vertices = [1.0, 1.0, 0.0, 0.0, -1.0, -1.0];
+  let vertices = [0.5, 0.5, 0.0, 0.0, -0.5, 0.5, 0.0, 1.0];
   let buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -64,5 +64,12 @@ function main(params) {
 
   gl.clearColor(0.5, 0.7, 0.5, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.LINES, 0, 3);
+  gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+  // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
+  // gl.POINTS
+  // gl.LINE_LOOP
+  // gl.LINE_STRIP
+  // gl.TRIANGLES
+  // gl.TRIANGLE_STRIP
+  // gl.TRIANGLE_FAN
 }
