@@ -25,9 +25,12 @@ function main(params) {
   attribute vec3 aColor;
   uniform float uTheta;
   varying vec3 vColor;
+  uniform vec2 u_translation;
   void main(){
-    float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
-    float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
+    // float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
+    // float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
+    float x = aPosition.x + u_translation.x;
+    float y = aPosition.y + u_translation.y;
     gl_Position = vec4(x, y, 0.0, 1.0);
     vColor = aColor;
      //also works like aPossition.xy
@@ -67,11 +70,13 @@ function main(params) {
   // use the program, which color to use?
   gl.useProgram(shaderProgram);
 
-  var theta = 0.0;
+  var theta = [0.1, 0.1];
   let freeze = false;
   // Variabel pointer ke GLSL
   var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
+  var transLocation = gl.getUniformLocation(shaderProgram, "u_translation");
 
+  // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
   // Teach the GPU how to collect position value from ARRAY_BUFFERS for every vertex that is processed
   let aPosition = gl.getAttribLocation(shaderProgram, "aPosition");
   gl.vertexAttribPointer(
@@ -119,17 +124,88 @@ function main(params) {
       freeze = !freeze;
     }
   }
+  let wkey = false;
+  let skey = false;
+  let akey = false;
+  let dkey = false;
+  // w
+  function onKeyWUp(event) {
+    if (event.keyCode == 87) {
+      wkey = !wkey;
+    }
+  }
+  // w
+  function onKeyWDown(event) {
+    if (event.keyCode == 87) {
+      wkey = !wkey;
+    }
+  }
+  // s
+  function onKeySUp(event) {
+    if (event.keyCode == 83) {
+      skey = !skey;
+    }
+  }
+  function onKeySDown(event) {
+    if (event.keyCode == 83) {
+      skey = !skey;
+    }
+  }
+  // a
+  function onKeyAUp(event) {
+    if (event.keyCode == 65) {
+      akey = !akey;
+    }
+  }
+  // a
+  function onKeyADown(event) {
+    if (event.keyCode == 65) {
+      akey = !akey;
+    }
+  }
+  // d
+  function onKeyDUp(event) {
+    if (event.keyCode == 68) {
+      dkey = !dkey;
+    }
+  }
+  function onKeyDDown(event) {
+    if (event.keyCode == 68) {
+      dkey = !dkey;
+    }
+  }
   document.addEventListener("keyup", onKeyUp);
   document.addEventListener("keydown", onKeyDown);
+
+  document.addEventListener("keydown", onKeyWDown);
+  document.addEventListener("keyup", onKeyWUp);
+  document.addEventListener("keydown", onKeySDown);
+  document.addEventListener("keyup", onKeySUp);
+  document.addEventListener("keydown", onKeyADown);
+  document.addEventListener("keyup", onKeyAUp);
+  document.addEventListener("keydown", onKeyDDown);
+  document.addEventListener("keyup", onKeyDUp);
 
   function render(params) {
     gl.clearColor(0.5, 0.7, 0.5, 1.0);
     //            Merah     Hijau   Biru    Transparansi
     gl.clear(gl.COLOR_BUFFER_BIT);
-    if (!freeze) {
-      theta -= 0.01;
-      gl.uniform1f(uTheta, theta);
+
+    if (wkey) {
+      theta[1] += 0.01;
     }
+    if (skey) {
+      theta[1] -= 0.01;
+    }
+    if (dkey) {
+      theta[0] += 0.01;
+    }
+    if (akey) {
+      theta[0] -= 0.01;
+    }
+
+    // theta[0] += 0.01;
+    gl.uniform2fv(transLocation, theta);
 
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     requestAnimationFrame(render);
