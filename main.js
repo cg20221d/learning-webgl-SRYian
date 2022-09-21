@@ -7,13 +7,13 @@ function main(params) {
   // decalre array untuk tiga titik
   let vertices = [
     //C
-    0.5, 0.5, 0.0, 1.0, 1.0,
+    0.5, 0.0, 0.0, 1.0, 1.0,
     //M
-    0.0, 0.0, 1.0, 0.0, 1.0,
+    0.0, -0.5, 1.0, 0.0, 1.0,
     // Y
-    -0.5, 0.5, 1.0, 1.0, 0.0,
+    -0.5, 0.0, 1.0, 1.0, 0.0,
     // K
-    0.0, 1.0, 1.0, 1.0, 1.0,
+    0.0, 0.5, 1.0, 1.0, 1.0,
   ];
   let buffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -68,7 +68,7 @@ function main(params) {
   gl.useProgram(shaderProgram);
 
   var theta = 0.0;
-
+  let freeze = false;
   // Variabel pointer ke GLSL
   var uTheta = gl.getUniformLocation(shaderProgram, "uTheta");
 
@@ -95,9 +95,8 @@ function main(params) {
   );
   gl.enableVertexAttribArray(aColor);
 
-  gl.clearColor(0.5, 0.7, 0.5, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+  // gl.clear(gl.COLOR_BUFFER_BIT);
+  // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
   // https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
   // gl.POINTS
   // gl.LINE_LOOP
@@ -106,14 +105,35 @@ function main(params) {
   // gl.TRIANGLE_STRIP
   // gl.TRIANGLE_FAN
 
+  function onMouseClick(event) {
+    freeze = !freeze;
+  }
+  document.addEventListener("click", onMouseClick);
+  function onKeyUp(event) {
+    if (event.keyCode == 32) {
+      freeze = !freeze;
+    }
+  }
+  function onKeyDown(event) {
+    if (event.keyCode == 32) {
+      freeze = !freeze;
+    }
+  }
+  document.addEventListener("keyup", onKeyUp);
+  document.addEventListener("keydown", onKeyDown);
+
   function render(params) {
-    gl.clearColor(1.0, 0.65, 0.0, 1.0); // Oranye
+    gl.clearColor(0.5, 0.7, 0.5, 1.0);
     //            Merah     Hijau   Biru    Transparansi
     gl.clear(gl.COLOR_BUFFER_BIT);
-    theta += 0.01;
-    gl.uniform1f(uTheta, theta);
+    if (!freeze) {
+      theta -= 0.01;
+      gl.uniform1f(uTheta, theta);
+    }
+
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
-    render();
+    requestAnimationFrame(render);
   }
-  setInterval(render, 0.5);
+  requestAnimationFrame(render);
+  // setInterval(render, 1000 / 60);
 }
