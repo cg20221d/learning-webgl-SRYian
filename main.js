@@ -1,3 +1,4 @@
+import glmt from "gl-matrix";
 function main(params) {
   let cnavas = document.getElementById("canvas");
   let gl = cnavas.getContext("webgl");
@@ -24,14 +25,31 @@ function main(params) {
   attribute vec2 aPosition;
   attribute vec3 aColor;
   uniform float uTheta;
+  uniform vec2 uDelta;
   varying vec3 vColor;
   uniform vec2 u_translation;
   void main(){
     // float x = -sin(uTheta) * aPosition.x + cos(uTheta) * aPosition.y;
     // float y = cos(uTheta) * aPosition.x + sin(uTheta) * aPosition.y;
-    float x = aPosition.x + u_translation.x;
-    float y = aPosition.y + u_translation.y;
-    gl_Position = vec4(x, y, 0.0, 1.0);
+    // float x = aPosition.x + u_translation.x;
+    // float y = aPosition.y + u_translation.y;
+    // mat4 translation=[]
+    // gl_Position = vec4(x, y, 0.0, 1.0);
+
+    vec2 position = aPosition;
+        mat4 rotation = mat4(
+            cos(uTheta), sin(uTheta), 0.0, 0.0,
+            -sin(uTheta), cos(uTheta), 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            0.0, 0.0, 0.0, 1.0
+        );
+        mat4 translation = mat4(
+            1.0, 0.0, 0.0, 0.0,
+            0.0, 1.0, 0.0, 0.0,
+            0.0, 0.0, 1.0, 0.0,
+            u_translation.x, u_translation.y, 0.0, 1.0
+        );
+    gl_Position = translation * rotation * vec4(position, 0.0, 1.0);
     vColor = aColor;
      //also works like aPossition.xy
   }`;
@@ -211,5 +229,10 @@ function main(params) {
     requestAnimationFrame(render);
   }
   requestAnimationFrame(render);
+  gl.clearColor(0.5, 0.7, 0.5, 1.0);
+  // //            Merah     Hijau   Biru    Transparansi
+  // gl.clear(gl.COLOR_BUFFER_BIT);
+  // gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+
   // setInterval(render, 1000 / 60);
 }
